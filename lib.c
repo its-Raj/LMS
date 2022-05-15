@@ -18,11 +18,12 @@ book b[100];
 
 void header();
 void start();
-void addbook(int *);
-void display(int *);
+void addbook();
+void display();
 
 int main()
 {
+
     system("cls");
     start();
     return 0;
@@ -40,7 +41,7 @@ void header()
 
 void start()
 {
-    int count = 0;
+
     int ch;
     header();
 
@@ -54,10 +55,10 @@ void start()
     switch (ch)
     {
     case 1:
-        addbook(&count);
+        addbook();
         break;
     case 2:
-        display(&count);
+        display();
         break;
 
     default:
@@ -66,11 +67,11 @@ void start()
     }
 }
 
-void addbook(int *count)
+void addbook()
 {
-    *count = 0;
+
     system("cls");
-    int n;
+    int n = 0;
 
     header();
 
@@ -105,7 +106,6 @@ void addbook(int *count)
 
         printf("\n\t\t\t\tEnter Flag (0 - issued / 1 - not issued ) : ");
         scanf("%d", &b[i].flag);
-        *count++;
     }
 
     fclose(fp);
@@ -116,15 +116,19 @@ void addbook(int *count)
     start();
 }
 
-void display(int *count)
+void display()
 {
     printf("\n\n\n");
     printf("\n\t\t\t\t--------------------------------------------------------------------------");
     printf("\n\t\t\t\t                         book Details                                     ");
     printf("\n\t\t\t\t--------------------------------------------------------------------------");
+    int n;
     char str[20];
 
-    for (int i = 0; i <= *count; i++)
+    printf("\n\t\t\t\tEnter last book no.: ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++)
     {
         printf("\n");
         printf("\n\t\t\t\tAccsation NO.: %d", b[i].ass_no);
@@ -140,8 +144,6 @@ void display(int *count)
 
         printf("\n\t\t\t\tStatus : %s", str);
     }
-
-    printf("\n\n\t\t\t\tCount = %d", *count);
 
     exit(1);
 }
