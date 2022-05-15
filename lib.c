@@ -19,11 +19,11 @@ book b[100];
 void header();
 void start();
 void addbook();
+void pause();
 void display();
 
 int main()
 {
-
     system("cls");
     start();
     return 0;
@@ -47,7 +47,6 @@ void start()
 
     printf("\n\n\t\t\t\tEnter 1 to Add Book");
     printf("\n\t\t\t\tEnter 2 to Display Book Details");
-    printf("\n\t\t\t\tEnter 3 to issue Book ");
 
     printf("\n\n\t\t\t\tEnter Choice : ");
     scanf("%d", &ch);
@@ -110,7 +109,10 @@ void addbook()
 
     fclose(fp);
 
-    printf("Book added Successfully.................");
+    printf("\n\t\t\t\tBook added Successfully.................");
+    printf("\n\n\n\t\t\tPress any key to go to main menu.....");
+    getchar();
+    getchar();
 
     system("cls");
     start();
@@ -125,25 +127,36 @@ void display()
     int n;
     char str[20];
 
-    printf("\n\t\t\t\tEnter last book no.: ");
+    printf("\n\t\t\t\t Enter Display till book Accsation no.: ");
     scanf("%d", &n);
 
     for (int i = 0; i < n; i++)
     {
-        printf("\n");
-        printf("\n\t\t\t\tAccsation NO.: %d", b[i].ass_no);
-        printf("\n\t\t\t\tBook Name : %s", b[i].name);
-        printf("\n\t\t\t\tAuthor Name : %s", b[i].author);
-        printf("\n\t\t\t\tBook Price : %d", b[i].price);
-
-        if (b[i].flag == 1)
-            strcpy(str, "Book is not issued");
-
+        if (b[i].ass_no == 0)
+        {
+            printf("\n\t\t\t\tNo books found !!!");
+        }
         else
-            strcpy(str, "Book is issued");
+        {
+            printf("\n");
+            printf("\n\t\t\t\tAccsation NO.: %d", b[i].ass_no);
+            printf("\n\t\t\t\tBook Name : %s", b[i].name);
+            printf("\n\t\t\t\tAuthor Name : %s", b[i].author);
+            printf("\n\t\t\t\tBook Price : %d", b[i].price);
 
-        printf("\n\t\t\t\tStatus : %s", str);
+            if (b[i].flag == 1)
+                strcpy(str, "Book is not issued");
+
+            else
+                strcpy(str, "Book is issued");
+
+            printf("\n\t\t\t\tStatus : %s", str);
+        }
     }
+    printf("\n\n\n\t\t\tPress any key to go to main menu.....");
+    getchar();
+    getchar();
 
-    exit(1);
+    system("cls");
+    start();
 }
