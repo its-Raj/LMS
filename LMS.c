@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "data.bin"
-
 typedef struct
 {
     int yyyy;
@@ -13,20 +11,21 @@ typedef struct
 
 typedef struct books
 {
-    int books_id;
+    int book_id;
     char name[25];
     char author[30];
     char studentName[30];
     Date issue_date;
 } book;
 
-// Function Decleration 
+// Function Decleration
 void header();
 void start();
 void addbook();
 void display();
 void searchBooks();
 void deleteBooks();
+void goto_start();
 
 int main()
 {
@@ -37,6 +36,7 @@ int main()
 
 void header()
 {
+    system("cls");
     printf("\n\n\n");
     printf("\t\t\t\t***************************************************************************");
     printf("\n\t\t\t\t************                                                   ************");
@@ -49,12 +49,15 @@ void start()
 {
 
     int ch;
+    system("cls");
     header();
 
     printf("\n\n\t\t\t\tEnter 1 to Add Book");
     printf("\n\t\t\t\tEnter 2 to View Book Details");
     printf("\n\t\t\t\tEnter 3 to Search Book");
     printf("\n\t\t\t\tEnter 4 to Delete Book");
+
+    printf("\n\n\t\t\t\tEnter 0 to Exit Application");
 
     printf("\n\n\t\t\t\tEnter Choice : ");
     scanf("%d", &ch);
@@ -73,9 +76,12 @@ void start()
     case 4:
         deleteBooks();
         break;
+    case 0:
+        exit(1);
 
     default:
-        printf("\n\n\n\t\t\tINVALID INPUT!!! Try again...");
+        printf("\n\n\n\t\t\t\tInvalid Input !!! Try again...");
+        goto_start();
         break;
     }
 }
@@ -94,42 +100,37 @@ void addbook()
 
     book data = {0};
     FILE *fp = NULL;
-    fp = fopen(FILE_NAME, "ab+");
+    fp = fopen("data.bin", "ab+");
 
     printf("\n\n\t\t\t\tENTER YOUR DETAILS BELOW :");
     printf("\n\t\t\t\t---------------------------------------------------------------------------\n");
 
-    printf("\n\t\t\t\tBook ID NO  = ");
+    printf("\n\t\t\t\tBook ID NO  : ");
     fflush(stdin);
-    scanf("%u", &data.books_id);
+    scanf("%u", &data.book_id);
 
-    printf("\n\t\t\t\tBook Name  = ");
+    printf("\n\t\t\t\tBook Name  : ");
     fflush(stdin);
     fgets(data.name, 50, stdin);
 
-    printf("\n\t\t\t\tAuthor Name  = ");
+    printf("\n\t\t\t\tAuthor Name  : ");
     fflush(stdin);
     fgets(data.author, 30, stdin);
 
-    printf("\n\t\t\t\tStudent Name  = ");
+    printf("\n\t\t\t\tStudent Name  : ");
     fflush(stdin);
     fgets(data.studentName, 30, stdin);
 
-    printf("\n\t\t\tEnter date in format (day/month/year): ");
+    printf("\n\t\t\t\tEnter date in format (day/month/year) : ");
     scanf("%d/%d/%d", &data.issue_date.dd, &data.issue_date.mm, &data.issue_date.yyyy);
 
     fwrite(&data, sizeof(data), 1, fp);
-
     fclose(fp);
 
+    printf("\n\t\t\t\t---------------------------------------------------------------------------\n");
     printf("\n\t\t\t\tBook added Successfully.................");
 
-    printf("\n\n\n\t\t\tPress any key to go to main menu.....");
-    getchar();
-    getchar();
-
-    system("cls");
-    start();
+    goto_start();
 }
 
 void display()
@@ -148,15 +149,15 @@ void display()
 
     FILE *fp = NULL;
     unsigned int countBook = 1;
-    fp = fopen(FILE_NAME, "rb");
+    fp = fopen("data.bin", "rb");
 
     while (fread(&data, sizeof(data), 1, fp))
     {
         printf("\n\t\t\t\tBook Count = %d\n\n", countBook);
-        printf("\t\t\t\tBook id : %u", data.books_id);
+        printf("\t\t\t\tBook id : %u", data.book_id);
         printf("\n\t\t\t\tBook name : %s", data.name);
-        printf("\t\t\t\tBook authorName : %s", data.author);
-        printf("\t\t\t\tBook issue date(day/month/year) : (%d/%d/%d)\n\n", data.issue_date.dd, data.issue_date.mm, data.issue_date.yyyy);
+        printf("\t\t\t\tBook author : %s", data.author);
+        printf("\n\t\t\t\tBook issue date(day/month/year) : (%d/%d/%d)\n\n", data.issue_date.dd, data.issue_date.mm, data.issue_date.yyyy);
         found = 1;
         ++countBook;
     }
@@ -166,12 +167,7 @@ void display()
         printf("\n\n\t\t\t\tNo Record Found... ");
     }
 
-    printf("\n\n\n\t\t\tPress any key to go to main menu.....");
-    getchar();
-    getchar();
-
-    system("cls");
-    start();
+    goto_start();
 }
 
 void searchBooks()
@@ -191,11 +187,11 @@ void searchBooks()
 
     FILE *fp = NULL;
     int status = 0;
-    fp = fopen(FILE_NAME, "rb");
+    fp = fopen("data.bin", "rb");
 
     if (fp == NULL)
     {
-        printf("\n\t\t\tFile is not opened\n");
+        printf("\n\t\t\t\tFile is not opened\n");
         exit(1);
     }
 
@@ -212,7 +208,7 @@ void searchBooks()
     }
     if (found)
     {
-        printf("\t\t\t\tBook id : %u", data.books_id);
+        printf("\n\t\t\t\tBook id : %u", data.book_id);
         printf("\n\t\t\t\tBook name : %s", data.name);
         printf("\t\t\t\tBook authorName : %s", data.author);
         printf("\t\t\t\tBook issue date(day/month/year) : (%d/%d/%d)\n\n", data.issue_date.dd, data.issue_date.mm, data.issue_date.yyyy);
@@ -222,12 +218,7 @@ void searchBooks()
         printf("\n\t\t\tNo Record Found....");
     }
 
-    printf("\n\n\n\t\t\tPress any key to go to main menu.....");
-    getchar();
-    getchar();
-
-    system("cls");
-    start();
+    goto_start();
 }
 
 void deleteBooks()
@@ -248,7 +239,7 @@ void deleteBooks()
 
     FILE *fp = NULL;
     FILE *tmpFp = NULL;
-    fp = fopen(FILE_NAME, "rb");
+    fp = fopen("data.bin", "rb");
     if (fp == NULL)
     {
         printf("File is not opened\n");
@@ -261,12 +252,12 @@ void deleteBooks()
         printf("File is not opened\n");
         exit(1);
     }
-    printf("\n\t\t\t\tEnter Book ID NO. for delete:");
+    printf("\n\t\t\t\tEnter Book ID NO. for delete : ");
     scanf("%d", &bookDelete);
 
     while (fread(&data, sizeof(data), 1, fp))
     {
-        if (data.books_id != bookDelete)
+        if (data.book_id != bookDelete)
         {
             fwrite(&data, sizeof(data), 1, tmpFp);
         }
@@ -278,11 +269,16 @@ void deleteBooks()
     (found) ? printf("\n\t\t\t\tRecord deleted successfully.....") : printf("\n\t\t\t\tRecord not found");
     fclose(fp);
     fclose(tmpFp);
-    remove(FILE_NAME);
-    rename("tmp.bin", FILE_NAME);
+    remove("data.bin");
+    rename("tmp.bin", "data.bin");
 
-    printf("\n\n\n\t\t\tPress any key to go to main menu.....");
-    getchar();
+    goto_start();
+}
+
+void goto_start()
+{
+    printf("\n\n\n\t\t\t\tPress Enter to go to main menu.....");
+    fflush(stdin);
     getchar();
 
     system("cls");
