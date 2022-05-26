@@ -19,8 +19,6 @@ typedef struct books
     Date issue_date;
 } book;
 
-book data[100];
-
 // Function Decleration
 void header();
 void start();
@@ -106,29 +104,25 @@ void addbook()
     printf("\n\t\t\t\t                              Add Book                                    ");
     printf("\n\t\t\t\t--------------------------------------------------------------------------");
 
+    book data = {0};
     FILE *fp = NULL;
-    int i, n;
-    printf("\n\n\t\t\t\tHow many books Do you want to Add : ");
-    scanf("%d", &n);
-    fp = fopen("test.bin", "ab+");
+    char ch;
+    fp = fopen("data.bin", "ab+");
 
-    printf("\n\n\t\t\t\tENTER YOUR DETAILS BELOW :");
+    printf("\n\n\t\t\t\tENTER  DETAILS BELOW :");
     printf("\n\t\t\t\t---------------------------------------------------------------------------\n");
 
-    for (int i = 0; i < n; i++)
-    {
-        printf("\n\t\t\t\tBook ID NO  : ");
-        fflush(stdin);
-        scanf("%u", &data[i].book_id);
+    printf("\n\t\t\t\tBook ID NO  : ");
+    fflush(stdin);
+    scanf("%u", &data.book_id);
 
-        printf("\n\t\t\t\tBook Name  : ");
-        fflush(stdin);
-        fgets(data[i].name, 50, stdin);
+    printf("\n\t\t\t\tBook Name  : ");
+    fflush(stdin);
+    fgets(data.name, 50, stdin);
 
-        printf("\n\t\t\t\tAuthor Name  : ");
-        fflush(stdin);
-        fgets(data[i].author, 30, stdin);
-    }
+    printf("\n\t\t\t\tAuthor Name  : ");
+    fflush(stdin);
+    fgets(data.author, 30, stdin);
 
     fwrite(&data, sizeof(data), 1, fp);
     fclose(fp);
@@ -136,7 +130,16 @@ void addbook()
     printf("\n\t\t\t\t---------------------------------------------------------------------------\n");
     printf("\n\t\t\t\tBook added Successfully.................");
 
-    goto_start();
+    printf("\n\n\n\t\t\t\tDo you want add another Book [Y/N] : ");
+    fflush(stdin);
+    scanf("%c", &ch);
+
+    if (ch == 'Y' || ch == 'y')
+    {
+        addbook();
+    }
+    else
+        goto_start();
 }
 
 void issueBooks()
@@ -150,31 +153,74 @@ void issueBooks()
     printf("\n\t\t\t\t                              Issue Book                                   ");
     printf("\n\t\t\t\t--------------------------------------------------------------------------");
 
+    book data = {0};
     char bookName[30] = {0};
     int bookDelete = 0;
+    int issuebook = 0;
     int found = 0;
-    int i = 0, n;
     char str[30];
 
     FILE *fp = NULL;
     FILE *tmpFp = NULL;
 
-    fp = fopen("test.bin", "rb");
+    fp = fopen("data.bin", "rb");
     if (fp == NULL)
     {
         printf("File is not opened\n");
         exit(1);
     }
-    printf("\n\n\t\t\t\tEnter Book id to issue : ");
-    scanf("%d", &i);
+    tmpFp = fopen("tmp.bin", "wb");
+    if (tmpFp == NULL)
+    {
+        fclose(fp);
+        printf("File is not opened\n");
+        exit(1);
+    }
+
+    printf("\n\t\t\t\tEnter Book ID NO. for Issue: ");
+    scanf("%d", &issuebook);
+
+    while (fread(&data, sizeof(data), 1, fp))
+    {
+        if (data.book_id != issuebook)
+        {
+            fwrite(&data, sizeof(data), 1, tmpFp);
+        }
+
+        else
+        {
+            found = 1;
+        }
+    }
+    (found == 1) ? printf("\n\t\t\t\tEnter Details.....") : printf("\n\t\t\t\tRecord not found");
+    fclose(fp);
+    fclose(tmpFp);
+    remove("data.bin");
+    rename("tmp.bin", "data.bin");
+
+    fp = fopen("data.bin", "ab+");
+
+    printf("\n\t\t\t\tBook ID NO  : ");
+    fflush(stdin);
+    scanf("%u", &data.book_id);
+
+    printf("\n\t\t\t\tBook Name  : ");
+    fflush(stdin);
+    fgets(data.name, 50, stdin);
+
+    printf("\n\t\t\t\tAuthor Name  : ");
+    fflush(stdin);
+    fgets(data.author, 30, stdin);
+
+    data.flag = 1;
 
     printf("\n\t\t\t\tStudent Name : ");
     fflush(stdin);
-    fgets(data[i].studentName, 50, stdin);
+    fgets(data.studentName, 50, stdin);
 
     printf("\n\t\t\t\tBook issue date(day/month/year) : ");
     fflush(stdin);
-    scanf("%d/%d/%d", &data[i].issue_date.dd, &data[i].issue_date.mm, &data[i].issue_date.yyyy);
+    scanf("%d/%d/%d", &data.issue_date.dd, &data.issue_date.mm, &data.issue_date.yyyy);
 
     fwrite(&data, sizeof(data), 1, fp);
     fclose(fp);
@@ -197,31 +243,32 @@ void display()
     printf("\n\t\t\t\t--------------------------------------------------------------------------");
 
     int found = 0;
-
-    int i = 0, n;
+    book data = {0};
 
     FILE *fp = NULL;
     unsigned int countBook = 1;
-    fp = fopen("test.bin", "rb");
-
-    printf("\n\n\t\t\t\tHow many book to view : ");
-    scanf("%d", &n);
+    fp = fopen("data.bin", "rb");
 
     while (fread(&data, sizeof(data), 1, fp))
     {
-        for (int i = 0; i < n; i++)
+        printf("\n\t\t\t\tBook Count = %d\n\n", countBook);
+        printf("\t\t\t\tBook id : %u", data.book_id);
+        printf("\n\t\t\t\tBook name : %s", data.name);
+        printf("\t\t\t\tBook author : %s", data.author);
+        if (data.flag == 1)
         {
-            printf("\n\t\t\t\tBook Count = %d\n", countBook);
-            printf("\n\t\t\t\tBook id : %u", data[i].book_id);
-            printf("\n\t\t\t\tBook name : %s", data[i].name);
-            printf("\n\t\t\t\tBook author : %s", data[i].author);
-            printf("\n\t\t\t\tStudent Name : %s", data[i].studentName);
-            printf("\n\t\t\t\tBook issue date(day/month/year) : (%d/%d/%d)\n\n", data[i].issue_date.dd, data[i].issue_date.mm, data[i].issue_date.yyyy);
-            found = 1;
-            ++countBook;
+            printf("\t\t\t\tStatus : Book issued");
+            printf("\n\t\t\t\tStudent Name : %s", data.studentName);
+            printf("\t\t\t\tBook issue date(day/month/year) : (%d/%d/%d)\n\n", data.issue_date.dd, data.issue_date.mm, data.issue_date.yyyy);
         }
-    }
+        else
+        {
+            printf("\t\t\t\tStatus : Book is available \n");
+        }
 
+        found = 1;
+        ++countBook;
+    }
     fclose(fp);
     if (!found)
     {
@@ -244,12 +291,12 @@ void searchBooks()
 
     int found = 0;
     int ch;
-    int i = 0, n;
     char bookName[30] = {0};
     char AuthorName[30] = {0};
+    book data = {0};
 
     FILE *fp = NULL;
-    fp = fopen("test.bin", "rb");
+    fp = fopen("data.bin", "rb");
 
     if (fp == NULL)
     {
@@ -270,17 +317,16 @@ void searchBooks()
 
         while (fread(&data, sizeof(data), 1, fp))
         {
-            if (!strcmp(data[i].name, bookName))
+            if (!strcmp(data.name, bookName))
             {
                 found = 1;
             }
 
             if (found)
             {
-                printf("\n\t\t\t\tBook id : %u", data[i].book_id);
-                printf("\n\t\t\t\tBook name : %s", data[i].name);
-                printf("\n\t\t\t\tBook authorName : %s", data[i].author);
-                i++;
+                printf("\n\t\t\t\tBook id : %u", data.book_id);
+                printf("\n\t\t\t\tBook name : %s", data.name);
+                printf("\t\t\t\tBook authorName : %s", data.author);
             }
             else
             {
@@ -297,17 +343,16 @@ void searchBooks()
 
         while (fread(&data, sizeof(data), 1, fp))
         {
-            if (!strcmp(data[i].author, AuthorName))
+            if (!strcmp(data.author, AuthorName))
             {
                 found = 1;
             }
 
             if (found)
             {
-                printf("\n\t\t\t\tBook id : %u", data[i].book_id);
-                printf("\n\t\t\t\tBook name : %s", data[i].name);
-                printf("\t\t\t\tBook authorName : %s", data[i].author);
-                i++;
+                printf("\n\t\t\t\tBook id : %u", data.book_id);
+                printf("\n\t\t\t\tBook name : %s", data.name);
+                printf("\t\t\t\tBook authorName : %s", data.author);
             }
             else
             {
@@ -329,15 +374,15 @@ void deleteBooks()
     printf("\n\t\t\t\t                         Delete Books Details                             ");
     printf("\n\t\t\t\t--------------------------------------------------------------------------");
 
-    int found = 0;
-    int i = 0, n;
+    int found = 0, i;
     int bookDelete = 0;
     char bookName[30] = {0};
+    book data = {0};
 
     FILE *fp = NULL;
     FILE *tmpFp = NULL;
 
-    fp = fopen("test.bin", "rb");
+    fp = fopen("data.bin", "rb");
     if (fp == NULL)
     {
         printf("File is not opened\n");
@@ -356,20 +401,21 @@ void deleteBooks()
 
     while (fread(&data, sizeof(data), 1, fp))
     {
-        if (data[i].book_id != bookDelete)
+        if (data.book_id != bookDelete)
         {
-            fwrite(&data[i], sizeof(data[i]), 1, tmpFp);
+            fwrite(&data, sizeof(data), 1, tmpFp);
         }
+
         else
         {
             found = 1;
         }
     }
-    (found) ? printf("\n\t\t\t\tRecord deleted successfully.....") : printf("\n\t\t\t\tRecord not found");
+    (found == 1) ? printf("\n\t\t\t\tRecord deleted successfully.....") : printf("\n\t\t\t\tRecord not found");
     fclose(fp);
     fclose(tmpFp);
-    remove("test.bin");
-    rename("tmp.bin", "test.bin");
+    remove("data.bin");
+    rename("tmp.bin", "data.bin");
 
     goto_start();
 }
