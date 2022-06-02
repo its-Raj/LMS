@@ -263,7 +263,7 @@ void display()
         }
         else
         {
-            printf("\t\t\t\tStatus : Book is available \n");
+            printf("\t\t\t\tStatus : Not issued \n");
         }
 
         found = 1;
@@ -289,78 +289,80 @@ void searchBooks()
     printf("\n\t\t\t\t                              Search Book                                 ");
     printf("\n\t\t\t\t--------------------------------------------------------------------------");
 
-    int found = 0;
-    int ch;
-    char bookName[30] = {0};
-    char AuthorName[30] = {0};
+    int found = 0, ch;
+    char bookName[50] = {0};
     book data = {0};
-
     FILE *fp = NULL;
-    fp = fopen("data.bin", "rb");
-
-    if (fp == NULL)
-    {
-        printf("\n\t\t\t\tFile is not opened\n");
-        exit(1);
-    }
 
     printf("\n\n\t\t\t\tEnter 1 to Search by Book Name ");
     printf("\n\t\t\t\tEnter 2 to Search by Author Name");
     printf("\n\n\t\t\t\tChoice : ");
     scanf("%d", &ch);
 
+    fp = fopen("data.bin", "rb");
+    if (fp == NULL)
+    {
+        printf("\n\t\t\tFile is not opened\n");
+        exit(1);
+    }
+
     if (ch == 1)
     {
         printf("\n\n\t\t\t\tEnter Book Name to search : ");
         fflush(stdin);
-        fgets(bookName, 30, stdin);
-
+        fgets(bookName, 50, stdin);
         while (fread(&data, sizeof(data), 1, fp))
         {
             if (!strcmp(data.name, bookName))
             {
                 found = 1;
-            }
-
-            if (found)
-            {
-                printf("\n\t\t\t\tBook id : %u", data.book_id);
-                printf("\n\t\t\t\tBook name : %s", data.name);
-                printf("\t\t\t\tBook authorName : %s", data.author);
-            }
-            else
-            {
-                printf("\n\t\t\t\tNo Record Found....");
+                break;
             }
         }
+        if (found)
+        {
+            printf("\n\t\t\t\tBook id : %u", data.book_id);
+            printf("\n\t\t\t\tBook name : %s", data.name);
+            printf("\t\t\t\tBook authorName : %s", data.author);
+        }
+        else
+        {
+            printf("\n\t\t\tNo Record");
+        }
+        fclose(fp);
         goto_start();
     }
     else if (ch == 2)
     {
-        printf("\n\n\t\t\t\tEnter Book Author Name to search : ");
+        printf("\n\n\t\t\t\tEnter Book Author to search : ");
         fflush(stdin);
-        fgets(AuthorName, 30, stdin);
+        fgets(bookName, 50, stdin);
 
         while (fread(&data, sizeof(data), 1, fp))
         {
-            if (!strcmp(data.author, AuthorName))
+            if (!strcmp(data.author, bookName))
             {
                 found = 1;
-            }
-
-            if (found)
-            {
-                printf("\n\t\t\t\tBook id : %u", data.book_id);
-                printf("\n\t\t\t\tBook name : %s", data.name);
-                printf("\t\t\t\tBook authorName : %s", data.author);
-            }
-            else
-            {
-                printf("\n\t\t\t\tNo Record Found....");
+                break;
             }
         }
+        if (found)
+        {
+            printf("\n\t\t\t\tBook id : %u", data.book_id);
+            printf("\n\t\t\t\tBook name : %s", data.name);
+            printf("\t\t\t\tBook authorName : %s", data.author);
+        }
+        else
+        {
+            printf("\n\t\t\tNo Record");
+        }
+
+        fclose(fp);
         goto_start();
     }
+
+    else
+        searchBooks();
 }
 
 void deleteBooks()
